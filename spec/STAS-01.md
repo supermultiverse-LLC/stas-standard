@@ -369,3 +369,88 @@ It aims to balance:
 * Long-term ecosystem growth
 
 ---
+## Media Requirements (Card v1)
+
+This section standardizes media so wallets and marketplaces can render STAS-01 cards consistently.
+
+### Recommended image ratios
+
+- **Card (primary)**: **2:3** aspect ratio (portrait).
+  - Recommended sizes: **1024×1536** or **2048×3072**
+- **Square preview (grid/thumbnail)**: **1:1**
+  - Recommended size: **1024×1024**
+
+### Formats
+
+- Preferred: **WebP**
+- Allowed: **PNG**, **JPG**
+- Animated (optional): **WebP animated** or **MP4** short loop (see `animation_uri`)
+
+### Size limits (recommendations)
+
+- Card front/back: ≤ **2.5 MB** each
+- Square preview: ≤ **500 KB**
+- Animation: ≤ **5 MB**, ≤ **5 seconds**
+
+### Safe area
+
+To prevent cropping by different UIs, creators should keep key elements within a centered safe area:
+- Safe margins: **5%** from each edge (top/bottom/left/right).
+
+---
+## Profile: Card v1
+
+Card v1 defines a collectible representation optimized for consumer UIs (mobile-first).
+
+### Fields
+
+The Card v1 profile is embedded in metadata under `profile.card_v1`.
+
+#### Required
+- `title` (string, 1–64 chars)
+- `front_image_uri` (string, HTTPS URL)
+- `front_image_hash` (string, hex SHA-256 of the front image bytes)
+
+#### Optional
+- `subtitle` (string, 0–80 chars)
+- `description` (string, 0–500 chars)
+- `back_image_uri` (string, HTTPS URL)
+- `back_image_hash` (string, hex SHA-256)
+- `square_image_uri` (string, HTTPS URL) — for grids
+- `square_image_hash` (string, hex SHA-256)
+- `animation_uri` (string, HTTPS URL) — short loop / holo / flip
+- `animation_hash` (string, hex SHA-256)
+- `attributes` (array of `{ trait_type, value }`)
+- `series` (string) — e.g., "SatoSeries"
+- `edition` (string) — e.g., "Gold", "Genesis"
+- `serial_number` (string) — e.g., "12/100"
+- `language` (BCP-47 string) — e.g., "en", "es"
+- `external_url` (string, HTTPS URL) — project page
+
+### Rendering rules (non-normative)
+
+- If `back_image_uri` exists, wallets MAY offer a flip interaction.
+- If `square_image_uri` exists, wallets SHOULD use it for grids.
+- If `animation_uri` exists, wallets MAY play it with user interaction.
+
+---
+
+## Royalties (Declarative)
+
+STAS-01 supports a **declarative royalty policy** intended for voluntary marketplace enforcement.
+Bitcoin base layer does not enforce royalties; this field exists to standardize creator compensation across compatible venues.
+
+### Fields
+
+Royalties are declared under `policy.royalties`.
+
+- `enabled` (boolean)
+- `bps` (integer) — basis points (e.g., 250 = 2.5%)
+- `recipient` (string) — recommended: Lightning Address or BOLT12 offer
+- `recipient_type` (enum) — `ln_address` | `bolt12` | `btc_address`
+- `terms_uri` (string, HTTPS URL) — optional human-readable policy
+
+### Notes
+
+- Wallets MUST treat royalties as informational.
+- Marketplaces MAY enforce royalties as part of their listing/trade rules.
