@@ -78,9 +78,9 @@ The canonical STAS-01 metadata JSON MUST include:
   "asset_name": "string",
   "serial_number": "string",
   "rarity": "common|uncommon|rare|epic|legendary|mythic",
-  "supply": 1,
-  "metadata_hash": "sha256 of canonical JSON"
+  "supply": 1
 }
+
 ````
 
 ## 4.1 Immutable Fields
@@ -97,6 +97,9 @@ The following fields MUST NEVER change:
 * version
 
 If any immutable field changes, a new asset MUST be minted.
+
+The cryptographic commitment to metadata is defined exclusively by the stas-01-envelope embedded in the Taproot Asset genesis meta bytes.
+The Core metadata schema itself does not contain hash commitments.
 
 ---
 
