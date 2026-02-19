@@ -1,21 +1,22 @@
 # STAS-01 — Supermultiverse Taproot Asset Standard
 
-Version 1.0
-Status: Draft
+Version 1.0  
+Status: Draft  
 Extends: Taproot Assets Protocol (Lightning Labs)
 
 ---
 
 # 1. Abstract
 
-STAS-01 specifies an open standard for issuing, representing, transferring, and evolving digital assets on Bitcoin using Taproot Assets.
+STAS-01 defines an open standard for issuing, representing, transferring, and evolving digital assets on Bitcoin using Taproot Assets.
 
-The standard defines:
+The standard specifies:
 
-* An immutable Core layer bound to a Taproot Asset.
-* A pluggable Profile system for structured representations (e.g., cards, tickets, badges).
-* An optional verifiable State layer for dynamic evolution.
-* Lightning-native transfer compatibility.
+- An immutable Core layer.
+- A structured Profile system (e.g., Card v1).
+- An optional verifiable State layer.
+- A strict metadata commitment model (`stas-01-envelope`).
+- Lightning-compatible transfer semantics.
 
 STAS-01 does not redefine Taproot Assets. It defines how metadata, profiles, and state must be structured and validated on top of them.
 
@@ -23,10 +24,10 @@ STAS-01 does not redefine Taproot Assets. It defines how metadata, profiles, and
 
 # 2. Design Principles
 
-1. Bitcoin-first — settlement and ownership anchored in Taproot Assets.
+1. Bitcoin-first — ownership anchored in Taproot Assets.
 2. Verifiability over trust — all external resources MUST be hash-verified.
 3. Immutable identity — core asset identity cannot change.
-4. Evolvable utility — optional state layer for real-world use cases.
+4. Evolvable utility — optional cryptographically verifiable state layer.
 5. Lightning-native — assets are designed for Lightning-based transfers.
 6. Interoperability — wallets can implement without issuer coordination.
 
@@ -34,7 +35,7 @@ STAS-01 does not redefine Taproot Assets. It defines how metadata, profiles, and
 
 # 3. Layered Architecture
 
-STAS-01 defines three distinct layers:
+STAS-01 defines three logical layers:
 
 ## 3.1 Core Layer (Immutable)
 
@@ -44,14 +45,14 @@ Never changes.
 
 ## 3.2 Profile Layer (Structured Representation)
 
-Defines how the asset should be interpreted and rendered.
+Defines how the asset is interpreted and rendered.
 
 Examples:
 
-* card-v1
-* ticket-v1 (future)
-* badge-v1 (future)
-* game-item-v1 (future)
+- card-v1
+- ticket-v1 (future)
+- badge-v1 (future)
+- game-item-v1 (future)
 
 Profiles are extensible.
 
@@ -59,13 +60,13 @@ Profiles are extensible.
 
 Defines dynamic fields that MAY change over time.
 
-State updates must be cryptographically verifiable.
+State updates MUST be cryptographically verifiable.
 
 ---
 
 # 4. Core Metadata Schema
 
-The Core metadata MUST include:
+The canonical STAS-01 metadata JSON MUST include:
 
 ```json
 {
@@ -78,15 +79,9 @@ The Core metadata MUST include:
   "serial_number": "string",
   "rarity": "common|uncommon|rare|epic|legendary|mythic",
   "supply": 1,
-  "media": {
-    "front_image": "uri",
-    "front_image_sha256": "hex",
-    "back_image": "uri (optional)",
-    "back_image_sha256": "hex (optional)"
-  },
   "metadata_hash": "sha256 of canonical JSON"
 }
-```
+````
 
 ## 4.1 Immutable Fields
 
@@ -98,23 +93,88 @@ The following fields MUST NEVER change:
 * serial_number
 * rarity
 * supply
-* media hashes
 * profile
 * version
 
-If any of these change, a new asset MUST be minted.
+If any immutable field changes, a new asset MUST be minted.
 
 ---
 
-# 5. Resource URI Rules
+# 5. Taproot Asset Metadata Commitment (stas-01-envelope)
 
-Assets MAY use:
+## 5.1 Purpose
+
+STAS-01 requires a cryptographic binding between:
+
+* The Taproot Asset
+* The metadata URI
+* The expected metadata hash
+
+This is achieved through a committed envelope embedded in the Taproot Asset genesis meta bytes.
+
+Wallets MUST NOT derive metadata_uri from meta_hash.
+
+## 5.2 Envelope Location
+
+The issuer MUST embed a UTF-8 JSON document into:
+
+`asset_genesis.meta`
+
+Taproot Assets commits to these bytes via:
+
+`asset_genesis.meta_hash = SHA256(meta_bytes)`
+
+Wallets MUST extract and validate this envelope from the proof.
+
+## 5.3 Envelope Format
+
+The envelope MUST be:
+
+```json
+{
+  "schema": "stas-01-envelope",
+  "version": "1",
+  "metadata_uri": "https://issuer.example.com/metadata/asset.json",
+  "metadata_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "content_type": "application/json"
+}
+```
+
+### Required Fields
+
+* `schema` MUST equal `"stas-01-envelope"`
+* `version` MUST equal `"1"`
+* `metadata_uri` MUST be a valid URI
+* `metadata_hash` MUST be 64-character lowercase hex SHA-256
+* `content_type` MUST equal `"application/json"`
+
+## 5.4 Wallet Validation Pipeline
+
+Wallets MUST:
+
+1. Verify Taproot Asset proof.
+2. Extract genesis meta bytes.
+3. Parse and validate the envelope.
+4. Fetch metadata from `metadata_uri`.
+5. Canonicalize metadata JSON (sorted keys, NFC strings, no whitespace).
+6. Compute SHA-256 of canonical JSON.
+7. Require equality with `metadata_hash`.
+8. Validate STAS-01 schema.
+9. Display collectible only if all checks pass.
+
+If any step fails, the collectible MUST be shown as Unresolved.
+
+---
+
+# 6. Resource URI Rules
+
+Allowed URI schemes:
 
 * https://
 * ipfs://
-* nostr:// (reserved for future use)
+* nostr:// (reserved)
 
-All external resources MUST include SHA-256 hash fields.
+All external resources MUST include SHA-256 hashes.
 
 Wallets MUST verify hashes before rendering.
 
@@ -122,72 +182,76 @@ Wallets MAY reject assets missing hashes.
 
 ---
 
-# 6. Profile System
+# 7. Profile: Card v1
 
-Profiles define representation rules.
+Card v1 defines a collectible representation optimized for mobile-first consumer UIs.
 
-The Core only requires:
+## 7.1 Media Fields
+
+Defined under:
 
 ```json
-"profile": "card-v1"
+"profile": {
+  "card_v1": { ... }
+}
 ```
 
-Profiles define additional REQUIRED and OPTIONAL fields.
+### Required
 
----
+* `title`
+* `front_image_uri`
+* `front_image_hash`
 
-# 7. Card Profile v1
+### Optional
 
-## 7.1 Visual Ratio
+* `subtitle`
+* `description`
+* `back_image_uri`
+* `back_image_hash`
+* `square_image_uri`
+* `square_image_hash`
+* `animation_uri`
+* `animation_hash`
+* `attributes`
+* `series`
+* `edition`
+* `serial_number`
+* `language`
+* `external_url`
 
-Recommended ratio:
+## 7.2 Image Ratios
 
-2.5:3.5 (standard trading card format)
+Primary card ratio:
 
-Allowed alternative:
+2:3 (portrait)
 
-7:10 vertical
+Square preview:
+
+1:1
 
 Wallets MUST preserve ratio.
 Wallets MUST NOT crop.
 Wallets MAY letterbox.
 
-## 7.2 Media Requirements
+## 7.3 Formats
 
-* front_image REQUIRED
-* back_image OPTIONAL
-* If back_image exists, wallets SHOULD support flip animation
-* Minimum resolution: 1024x1434
-* Recommended resolution: 2048x2868
-* Max image size: 2MB
+Preferred: WebP
+Allowed: PNG, JPG
+Animated: WebP animated or MP4 (≤ 5 seconds)
 
-## 7.3 Recommended Fields
+## 7.4 Size Limits
 
-```json
-{
-  "title": "string",
-  "subtitle": "string",
-  "description": "string",
-  "season": "string",
-  "attributes": [
-    {
-      "trait_type": "string",
-      "value": "string|number"
-    }
-  ]
-}
-```
+* Front/back image ≤ 2.5 MB
+* Square preview ≤ 500 KB
+* Animation ≤ 5 MB
 
-Wallets SHOULD render rarity badge.
-Wallets SHOULD render serial number prominently.
+## 7.5 Safe Area
+
+Important elements SHOULD remain within 5% margin from each edge.
 
 ---
 
 # 8. State Layer (Optional)
-
-STAS-01 supports dynamic evolution via issuer-signed state updates.
-
-Core identity remains immutable.
 
 ## 8.1 State Model Declaration
 
@@ -195,15 +259,9 @@ Core identity remains immutable.
 "state_model": "immutable" | "issuer_signed" | "hybrid_checkpointed"
 ```
 
-Default:
-
-```
-immutable
-```
+Default: immutable
 
 ## 8.2 Issuer-Signed State
-
-If state_model = issuer_signed:
 
 ```json
 {
@@ -220,103 +278,148 @@ Wallet MUST verify:
 * state_hash matches content at state_uri
 * state_version increments sequentially
 
-## 8.3 Mutable Fields (Allowed)
+State MUST NOT modify immutable Core fields.
 
-State MAY contain:
+## 8.3 Hybrid Checkpointed Model
 
-* stats
-* xp
-* progress
-* season_performance
-* status
-* unlockables
-* dynamic_attributes
-
-State MUST NOT alter:
-
-* rarity
-* serial_number
-* supply
-* issuer_id
-* collection_id
-* media hashes
-
----
-
-# 9. Hybrid Checkpointed Model
-
-If state_model = hybrid_checkpointed:
-
-Issuer MAY periodically anchor state_hash to Bitcoin.
-
-Anchoring MAY occur via:
+Issuer MAY periodically anchor state_hash to Bitcoin via:
 
 * Taproot Asset update
 * Separate transaction commitment
 * Merkle root anchoring
 
-Wallets MAY display:
-
-"State anchored at block height X"
-
 Anchoring is OPTIONAL but recommended for high-value milestones.
 
 ---
 
-# 10. Minting Requirements
+# 9. Minting Requirements
 
 STAS-01 assets MUST be minted as valid Taproot Assets.
 
 Issuer MUST:
 
-* Commit metadata_hash inside Taproot Asset metadata
-* Publish proofs to a Universe server
-* Ensure metadata_uri resolves to canonical JSON
+* Commit a valid `stas-01-envelope` in Taproot Asset genesis meta bytes.
+* Ensure `metadata_uri` resolves to canonical STAS-01 JSON.
+* Make proofs publicly accessible.
 
 Wallets MUST:
 
-* Verify proof chain (P0 + P1)
-* Validate metadata_hash
-* Validate schema compliance
+* Verify proof chain (P0 + P1).
+* Validate envelope integrity.
+* Validate metadata_hash.
+* Validate schema compliance.
 
 ---
 
-# 11. Transfer Model
+# 10. Transfer Model
 
-Transfers follow Taproot Asset protocol.
+Ownership is determined exclusively by Taproot Asset protocol.
 
-Preferred settlement:
+STAS-01 assets:
 
-Lightning-based asset transfers.
+* MUST be transferable via standard Taproot Asset virtual PSBT.
+* MUST preserve asset_id and immutable Core fields.
+* MUST NOT require custom OP_RETURN scanning.
 
-Fallback:
+Transfer MAY update:
 
-On-chain virtual PSBT.
-
-STAS-01 does not redefine transfer logic.
+* Ownership
+* State layer (if issuer_signed model is active)
 
 ---
 
-# 12. Security Model
+# 11. Settlement Model
+
+## 11.1 On-Chain Settlement (Required)
+
+All STAS-01 assets MUST support on-chain Taproot Asset transfers.
+
+Guarantees:
+
+* Bitcoin-level finality
+* Base-layer sovereignty
+* Universal compatibility
+
+## 11.2 Lightning Settlement (Recommended)
+
+Lightning-based Taproot Asset transfers are strongly recommended for:
+
+* Secondary markets
+* Gaming ecosystems
+* Microtransactions
+* High-frequency transfers
+
+Lightning is optional for compliance but represents the preferred scalability path.
+
+---
+
+# 12. Royalties (Declarative)
+
+Royalties are informational and voluntary.
+
+Declared under:
+
+```json
+"policy": {
+  "royalties": {
+    "enabled": true,
+    "bps": 250,
+    "recipient": "user@ln.domain",
+    "recipient_type": "ln_address",
+    "terms_uri": "https://..."
+  }
+}
+```
+
+Wallets MUST treat royalties as informational.
+
+Marketplaces MAY enforce them voluntarily.
+
+---
+
+# 13. Security Model
 
 Wallets MUST:
 
-* Verify Taproot Asset proof
-* Verify metadata hash
-* Verify image hashes
-* Verify issuer signatures for state updates
-* Reject malformed JSON
-* Reject unknown schema versions
+* Verify Taproot Asset proof.
+* Validate envelope integrity.
+* Validate metadata hash.
+* Validate media hashes.
+* Verify state signatures (if present).
+* Reject malformed JSON.
+* Reject unknown schema versions.
 
 Wallets SHOULD:
 
-* Display version history
-* Warn users if state is mutable
-* Indicate if state is anchored
+* Indicate mutable state.
+* Display resolution errors clearly.
 
 ---
 
-# 13. Versioning
+# 14. Compliance Levels
+
+## 14.1 Core Compliance
+
+* Proof verification
+* Envelope validation
+* Metadata validation
+* On-chain transfer support
+
+## 14.2 Profile Compliance
+
+* Correct Card v1 rendering
+* Media hash verification
+* Respect rendering rules
+
+## 14.3 Lightning-Enabled Compliance
+
+* Support Lightning-based Taproot Asset transfers
+
+Lightning support is optional but recommended.
+
+---
+
+# 15. Versioning
 
 Core version changes require:
 
@@ -325,42 +428,25 @@ Core version changes require:
 
 Profiles MAY evolve independently.
 
-Example:
-
-card-v1
-card-v2
-
 ---
 
-# 14. Compliance Checklist
-
-An asset is STAS-01 compliant if:
-
-* Valid Taproot Asset proof
-* Metadata matches metadata_hash
-* Schema validates
-* Profile rules respected
-* State rules respected (if present)
-
----
-
-# 15. Future Extensions
+# 16. Future Extensions
 
 Reserved for:
 
-* Royalty mechanism
-* On-chain attribute commitments
+* Royalty enforcement layers
 * Zero-knowledge ownership proofs
 * Multi-issuer collections
 * Decentralized state networks
+* Advanced commitment schemes
 
 ---
 
-# 16. Conclusion
+# 17. Conclusion
 
 STAS-01 defines a Bitcoin-native asset standard built on Taproot Assets with Lightning compatibility, immutable identity, structured representation, and optional verifiable evolution.
 
-It aims to balance:
+It is designed for:
 
 * Sovereignty
 * Verifiability
@@ -368,202 +454,5 @@ It aims to balance:
 * Enterprise adoption
 * Long-term ecosystem growth
 
----
-17. Transfer Semantics
-
-STAS-01 does not redefine ownership transfer logic. Ownership is determined exclusively by the underlying Taproot Asset protocol.
-
-A STAS-01 compliant asset:
-
-MUST be transferable on-chain using standard Taproot Asset virtual PSBT flows.
-
-MUST preserve asset_id, supply, and immutable Core fields during transfer.
-
-MUST NOT require custom OP_RETURN scanning or non-TA mechanisms.
-
-Wallet responsibilities:
-
-Verify full proof chain (P0 + P1)
-
-Validate metadata_hash against canonical JSON
-
-Preserve Profile and State layers without alteration
-
-Transfer does NOT modify:
-
-issuer_id
-
-rarity
-
-serial_number
-
-supply
-
-collection_id
-
-Transfer MAY update:
-
-Ownership state
-
-State layer (if issuer_signed model is active)
-
-18. Settlement Model
-
-STAS-01 defines a dual-layer settlement philosophy:
-
-18.1 On-Chain Settlement (Foundational)
-
-All STAS-01 assets MUST be transferable via on-chain Taproot Asset transactions.
-
-This guarantees:
-
-Bitcoin-level finality
-
-Universal compatibility
-
-Base-layer sovereignty
-
-On-chain settlement ensures minimum viable interoperability.
-
-18.2 Lightning Settlement (Preferred for Scale)
-
-Lightning-based Taproot Asset transfers are strongly RECOMMENDED for:
-
-Secondary marketplaces
-
-High-frequency trading
-
-Micro-transactions
-
-Gaming ecosystems
-
-Lightning settlement is not required for STAS-01 compliance but represents the preferred scalability path.
-
-STAS-01 does not mandate Lightning infrastructure but is designed to be Lightning-native.
-
-19. Compliance Levels
-
-To enable progressive ecosystem growth, STAS-01 defines compliance tiers.
-
-19.1 Core Compliance
-
-A wallet or issuer is Core-compliant if it:
-
-Verifies Taproot Asset proofs
-
-Validates metadata_hash
-
-Enforces immutable Core fields
-
-Supports on-chain transfer
-
-19.2 Profile Compliance
-
-Profile-compliant implementations:
-
-Correctly render Card v1 (or other profiles)
-
-Enforce media hash verification
-
-Respect rendering rules
-
-Display royalty declarations
-
-19.3 Lightning-Enabled Compliance
-
-Lightning-enabled implementations:
-
-Support Lightning-based Taproot Asset transfers
-
-Respect royalty declarations at marketplace level
-
-Enable instant asset settlement
-
-Lightning support is optional but recommended for advanced implementations.
-
----
-## Media Requirements (Card v1)
-
-This section standardizes media so wallets and marketplaces can render STAS-01 cards consistently.
-
-### Recommended image ratios
-
-- **Card (primary)**: **2:3** aspect ratio (portrait).
-  - Recommended sizes: **1024×1536** or **2048×3072**
-- **Square preview (grid/thumbnail)**: **1:1**
-  - Recommended size: **1024×1024**
-
-### Formats
-
-- Preferred: **WebP**
-- Allowed: **PNG**, **JPG**
-- Animated (optional): **WebP animated** or **MP4** short loop (see `animation_uri`)
-
-### Size limits (recommendations)
-
-- Card front/back: ≤ **2.5 MB** each
-- Square preview: ≤ **500 KB**
-- Animation: ≤ **5 MB**, ≤ **5 seconds**
-
-### Safe area
-
-To prevent cropping by different UIs, creators should keep key elements within a centered safe area:
-- Safe margins: **5%** from each edge (top/bottom/left/right).
-
----
-## Profile: Card v1
-
-Card v1 defines a collectible representation optimized for consumer UIs (mobile-first).
-
-### Fields
-
-The Card v1 profile is embedded in metadata under `profile.card_v1`.
-
-#### Required
-- `title` (string, 1–64 chars)
-- `front_image_uri` (string, HTTPS URL)
-- `front_image_hash` (string, hex SHA-256 of the front image bytes)
-
-#### Optional
-- `subtitle` (string, 0–80 chars)
-- `description` (string, 0–500 chars)
-- `back_image_uri` (string, HTTPS URL)
-- `back_image_hash` (string, hex SHA-256)
-- `square_image_uri` (string, HTTPS URL) — for grids
-- `square_image_hash` (string, hex SHA-256)
-- `animation_uri` (string, HTTPS URL) — short loop / holo / flip
-- `animation_hash` (string, hex SHA-256)
-- `attributes` (array of `{ trait_type, value }`)
-- `series` (string) — e.g., "SatoSeries"
-- `edition` (string) — e.g., "Gold", "Genesis"
-- `serial_number` (string) — e.g., "12/100"
-- `language` (BCP-47 string) — e.g., "en", "es"
-- `external_url` (string, HTTPS URL) — project page
-
-### Rendering rules (non-normative)
-
-- If `back_image_uri` exists, wallets MAY offer a flip interaction.
-- If `square_image_uri` exists, wallets SHOULD use it for grids.
-- If `animation_uri` exists, wallets MAY play it with user interaction.
-
----
-
-## Royalties (Declarative)
-
-STAS-01 supports a **declarative royalty policy** intended for voluntary marketplace enforcement.
-Bitcoin base layer does not enforce royalties; this field exists to standardize creator compensation across compatible venues.
-
-### Fields
-
-Royalties are declared under `policy.royalties`.
-
-- `enabled` (boolean)
-- `bps` (integer) — basis points (e.g., 250 = 2.5%)
-- `recipient` (string) — recommended: Lightning Address or BOLT12 offer
-- `recipient_type` (enum) — `ln_address` | `bolt12` | `btc_address`
-- `terms_uri` (string, HTTPS URL) — optional human-readable policy
-
-### Notes
-
-- Wallets MUST treat royalties as informational.
-- Marketplaces MAY enforce royalties as part of their listing/trade rules.
+```
+```
