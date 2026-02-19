@@ -369,6 +369,119 @@ It aims to balance:
 * Long-term ecosystem growth
 
 ---
+17. Transfer Semantics
+
+STAS-01 does not redefine ownership transfer logic. Ownership is determined exclusively by the underlying Taproot Asset protocol.
+
+A STAS-01 compliant asset:
+
+MUST be transferable on-chain using standard Taproot Asset virtual PSBT flows.
+
+MUST preserve asset_id, supply, and immutable Core fields during transfer.
+
+MUST NOT require custom OP_RETURN scanning or non-TA mechanisms.
+
+Wallet responsibilities:
+
+Verify full proof chain (P0 + P1)
+
+Validate metadata_hash against canonical JSON
+
+Preserve Profile and State layers without alteration
+
+Transfer does NOT modify:
+
+issuer_id
+
+rarity
+
+serial_number
+
+supply
+
+collection_id
+
+Transfer MAY update:
+
+Ownership state
+
+State layer (if issuer_signed model is active)
+
+18. Settlement Model
+
+STAS-01 defines a dual-layer settlement philosophy:
+
+18.1 On-Chain Settlement (Foundational)
+
+All STAS-01 assets MUST be transferable via on-chain Taproot Asset transactions.
+
+This guarantees:
+
+Bitcoin-level finality
+
+Universal compatibility
+
+Base-layer sovereignty
+
+On-chain settlement ensures minimum viable interoperability.
+
+18.2 Lightning Settlement (Preferred for Scale)
+
+Lightning-based Taproot Asset transfers are strongly RECOMMENDED for:
+
+Secondary marketplaces
+
+High-frequency trading
+
+Micro-transactions
+
+Gaming ecosystems
+
+Lightning settlement is not required for STAS-01 compliance but represents the preferred scalability path.
+
+STAS-01 does not mandate Lightning infrastructure but is designed to be Lightning-native.
+
+19. Compliance Levels
+
+To enable progressive ecosystem growth, STAS-01 defines compliance tiers.
+
+19.1 Core Compliance
+
+A wallet or issuer is Core-compliant if it:
+
+Verifies Taproot Asset proofs
+
+Validates metadata_hash
+
+Enforces immutable Core fields
+
+Supports on-chain transfer
+
+19.2 Profile Compliance
+
+Profile-compliant implementations:
+
+Correctly render Card v1 (or other profiles)
+
+Enforce media hash verification
+
+Respect rendering rules
+
+Display royalty declarations
+
+19.3 Lightning-Enabled Compliance
+
+Lightning-enabled implementations:
+
+Support Lightning-based Taproot Asset transfers
+
+Respect royalty declarations at marketplace level
+
+Enable instant asset settlement
+
+Lightning support is optional but recommended for advanced implementations.
+
+---
 ## Media Requirements (Card v1)
 
 This section standardizes media so wallets and marketplaces can render STAS-01 cards consistently.
