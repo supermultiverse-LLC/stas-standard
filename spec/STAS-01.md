@@ -280,8 +280,113 @@ Wallets MUST:
 * Validate schema compliance
 
 ---
+#11. Taproot Assets Metadata Envelope (Required)
 
-# 11. Transfer Model
+STAS-01 collectibles are issued as Taproot Assets. The wallet MUST discover ownership via Taproot Assets proofs (e.g., Universe) and MUST resolve collectible metadata using a metadata envelope committed in the Taproot Asset genesis.
+
+X.1 Purpose
+
+The goal of the metadata envelope is to:
+
+cryptographically bind a metadata URI and expected metadata hash to the asset,
+
+avoid reliance on any default host or issuer-specific conventions,
+
+keep metadata resolution open and interoperable across issuers,
+
+preserve long-term stability while allowing multiple hosting strategies (HTTPS, IPFS gateways, etc.).
+
+X.2 Envelope Location (Taproot Assets Commitment)
+
+The issuer MUST embed a UTF-8 JSON document (the “envelope”) into the Taproot Asset genesis meta bytes (asset_genesis.meta).
+
+Taproot Assets commits to these meta bytes via:
+
+asset_genesis.meta_hash = SHA256(asset_genesis.meta_bytes)
+
+Wallets MAY obtain the envelope through proofs, Universe APIs, or any mechanism that exposes asset_genesis.meta and asset_genesis.meta_hash.
+
+X.3 Envelope Format (Required)
+
+The envelope MUST be a UTF-8 JSON object with the following required fields:
+
+schema (string): MUST equal "stas-01-envelope"
+
+version (string): MUST equal "1"
+
+metadata_uri (string): a public URI where the STAS-01 metadata JSON can be fetched
+
+metadata_hash (string): 64-char lowercase hex, MUST equal SHA256(canonical_json(metadata))
+
+content_type (string): MUST be "application/json"
+
+Wallets MUST treat the envelope as invalid if:
+
+JSON is invalid,
+
+root is not an object,
+
+required fields are missing,
+
+required fixed values do not match,
+
+metadata_hash is not valid lowercase 64-char hex.
+
+Envelope example:
+
+{
+  "schema": "stas-01-envelope",
+  "version": "1",
+  "metadata_uri": "https://issuer.example.com/metadata/abc123.json",
+  "metadata_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "content_type": "application/json"
+}
+
+X.4 Metadata Requirements
+
+The metadata document located at metadata_uri MUST be a valid STAS-01 metadata JSON (schema stas-01, version 1.0, etc.) as defined in this specification.
+
+The wallet MUST compute:
+
+canonical = canonicalize(metadata_json) (sorted keys, NFC strings, no whitespace, recursive)
+
+computed_hash = SHA256(canonical)
+
+and MUST require:
+
+computed_hash == envelope.metadata_hash
+
+If the hash does not match, the wallet MUST NOT display the collectible as resolved.
+
+X.5 Wallet Validation Rules (Required)
+
+A wallet implementing STAS-01 MUST perform the following pipeline:
+
+Proof discovery (e.g., Universe sync) to detect owned Taproot Assets.
+
+Proof verification per Taproot Assets security requirements (P0/P1).
+
+Envelope extraction from asset_genesis.meta bytes.
+
+Envelope validation (schema, version, metadata_uri, metadata_hash, content_type).
+
+Metadata fetch from metadata_uri.
+
+Canonicalization + hash check against metadata_hash.
+
+STAS-01 metadata schema validation.
+
+If all checks pass: the collectible is Resolved and may be displayed normally.
+
+If any step fails: the collectible MUST be shown as Unresolved (if displayed), with an error reason, and MUST NOT be treated as a valid STAS-01 collectible.
+
+X.6 No Default URI Convention
+
+Wallets MUST NOT derive metadata_uri from meta_hash by applying any default base URL convention.
+
+Any URI convention (including https://.../{hash}.json) is an issuer choice and MUST be explicitly provided via metadata_uri inside the envelope.
+---
+# 12. Transfer Model
 
 Transfers follow Taproot Asset protocol.
 
@@ -297,7 +402,7 @@ STAS-01 does not redefine transfer logic.
 
 ---
 
-# 12. Security Model
+# 13. Security Model
 
 Wallets MUST:
 
@@ -316,7 +421,7 @@ Wallets SHOULD:
 
 ---
 
-# 13. Versioning
+# 14. Versioning
 
 Core version changes require:
 
@@ -332,7 +437,7 @@ card-v2
 
 ---
 
-# 14. Compliance Checklist
+# 15. Compliance Checklist
 
 An asset is STAS-01 compliant if:
 
@@ -344,7 +449,7 @@ An asset is STAS-01 compliant if:
 
 ---
 
-# 15. Future Extensions
+# 16. Future Extensions
 
 Reserved for:
 
@@ -356,7 +461,7 @@ Reserved for:
 
 ---
 
-# 16. Conclusion
+# 17. Conclusion
 
 STAS-01 defines a Bitcoin-native asset standard built on Taproot Assets with Lightning compatibility, immutable identity, structured representation, and optional verifiable evolution.
 
@@ -369,7 +474,7 @@ It aims to balance:
 * Long-term ecosystem growth
 
 ---
-17. Transfer Semantics
+# 18. Transfer Semantics
 
 STAS-01 does not redefine ownership transfer logic. Ownership is determined exclusively by the underlying Taproot Asset protocol.
 
@@ -407,7 +512,7 @@ Ownership state
 
 State layer (if issuer_signed model is active)
 
-18. Settlement Model
+# 19. Settlement Model
 
 STAS-01 defines a dual-layer settlement philosophy:
 
@@ -425,7 +530,7 @@ Base-layer sovereignty
 
 On-chain settlement ensures minimum viable interoperability.
 
-18.2 Lightning Settlement (Preferred for Scale)
+19.2 Lightning Settlement (Preferred for Scale)
 
 Lightning-based Taproot Asset transfers are strongly RECOMMENDED for:
 
@@ -441,11 +546,11 @@ Lightning settlement is not required for STAS-01 compliance but represents the p
 
 STAS-01 does not mandate Lightning infrastructure but is designed to be Lightning-native.
 
-19. Compliance Levels
+# 20. Compliance Levels
 
 To enable progressive ecosystem growth, STAS-01 defines compliance tiers.
 
-19.1 Core Compliance
+20.1 Core Compliance
 
 A wallet or issuer is Core-compliant if it:
 
@@ -457,7 +562,7 @@ Enforces immutable Core fields
 
 Supports on-chain transfer
 
-19.2 Profile Compliance
+20.2 Profile Compliance
 
 Profile-compliant implementations:
 
@@ -469,7 +574,7 @@ Respect rendering rules
 
 Display royalty declarations
 
-19.3 Lightning-Enabled Compliance
+20.3 Lightning-Enabled Compliance
 
 Lightning-enabled implementations:
 
