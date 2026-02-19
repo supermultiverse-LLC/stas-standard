@@ -80,8 +80,7 @@ The canonical STAS-01 metadata JSON MUST include:
   "rarity": "common|uncommon|rare|epic|legendary|mythic",
   "supply": 1
 }
-
-````
+```
 
 ## 4.1 Immutable Fields
 
@@ -98,12 +97,12 @@ The following fields MUST NEVER change:
 
 If any immutable field changes, a new asset MUST be minted.
 
-The cryptographic commitment to metadata is defined exclusively by the stas-01-envelope embedded in the Taproot Asset genesis meta bytes.
+The cryptographic commitment to metadata is defined exclusively by the `stas-01-envelope` embedded in the Taproot Asset genesis meta bytes.  
 The Core metadata schema itself does not contain hash commitments.
 
 ---
 
-# 5. Taproot Asset Metadata Commitment (stas-01-envelope)
+# 5. Taproot Asset Metadata Commitment (`stas-01-envelope`)
 
 ## 5.1 Purpose
 
@@ -115,7 +114,7 @@ STAS-01 requires a cryptographic binding between:
 
 This is achieved through a committed envelope embedded in the Taproot Asset genesis meta bytes.
 
-Wallets MUST NOT derive metadata_uri from meta_hash.
+Wallets MUST NOT derive metadata_uri from meta_hash or any implicit resolver pattern.
 
 ## 5.2 Envelope Location
 
