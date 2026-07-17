@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Profile Identifier: `urn:stas:profile:bdo`
-- Profile Version: 0.1.0
+- Profile Version: 0.2.0
 - Author: STAS Working Group
 - Created: 2026-07-17
 
@@ -12,7 +12,7 @@
 
 This Profile constrains STAS-01 for the interoperable representation of **Bitcoin Digital Objects (BDOs)**, as defined by the BDO-01 conceptual specification.
 
-It selects and strengthens the requirements of the STAS Core Object Model so that a STAS Object faithfully represents a Bitcoin Digital Object, and it identifies the Layer Profiles required to make that representation concretely interoperable.
+It selects and strengthens the requirements of the STAS Core Object Model so that a STAS Object faithfully represents a Bitcoin Digital Object, and it composes the Representation, Serialization, and Encoding Layer Profiles that make that representation concretely interoperable.
 
 This Profile is defined under RFC-0012. It preserves the semantics and architectural boundaries of the STAS specifications on which it depends and does not redefine the Core Object Model.
 
@@ -32,7 +32,7 @@ This Profile applies to:
 
 - constraints on the STAS Core Object Model (Section "Core Object Model Constraints");
 - the representation of BDO ownership, issuance, and provenance information;
-- the Layer Profiles required for concrete interoperability (declared as dependencies).
+- the composition of the Representation, Serialization, and Encoding Layer Profiles required for concrete interoperability.
 
 This Profile does not apply to:
 
@@ -52,13 +52,15 @@ This Profile depends normatively on:
 - **STAS-01 v1.0** — the released specification (RFC-0001 through RFC-0016).
 - **BDO-01 v1.0** — informative, as the conceptual model this Profile represents.
 
-This Profile is a **Composite Profile** and additionally depends on the following **Layer Profiles**, which are **not yet defined**:
+This Profile is a **Composite Profile** and composes the following **Layer Profiles**, at the exact versions given:
 
-- a **Representation Profile** for Bitcoin Digital Objects;
-- a **Serialization Profile** (canonical);
-- an **Encoding Profile** (canonical).
+| Layer | Profile | Identifier | Version |
+|-------|---------|------------|---------|
+| Representation | BDO Representation | `urn:stas:profile:bdo-representation` | 0.1.0 |
+| Serialization | BDO Serialization (CBOR) | `urn:stas:profile:bdo-serialization-cbor` | 0.1.0 |
+| Encoding | BDO Encoding (CBOR) | `urn:stas:profile:bdo-encoding-cbor` | 0.1.0 |
 
-Until those Layer Profiles are defined and released, this Profile defines the semantic and Identity constraints of a Bitcoin Digital Object representation but **cannot yet be claimed as a complete interoperability agreement**. A conformance claim of full interoperability under this Profile SHALL identify the specific Layer Profile versions used; while those dependencies are undefined, only the constraints in this document apply.
+Together these define the complete Representation → Serialization → Encoding pipeline for a Bitcoin Digital Object: the BDO Representation structure, a deterministic CBOR Serialized Form, and an `application/cbor` Encoded Form with byte-level equality. A conformance claim of full interoperability under this Profile SHALL identify these Layer Profile versions. The Transport and Storage of the resulting Encoded Form are outside this Profile and may be constrained by separate Layer Profiles.
 
 ---
 
@@ -144,9 +146,9 @@ This Profile permits STAS Extensions (RFC-0013) at the extension points declared
 
 # Conformance
 
-An implementation or object conforms to this Profile when it satisfies every applicable **MUST** requirement of this Profile, of STAS-01, and of this Profile's Dependency Closure, for the applicable Conformance Class.
+An implementation or object conforms to this Profile when it satisfies every applicable **MUST** requirement of this Profile, of STAS-01, and of this Profile's Dependency Closure — including the three composed Layer Profiles at the versions pinned in the Dependencies section — for the applicable Conformance Class.
 
-While the Layer Profile dependencies remain undefined, conformance is limited to the semantic, Identity, verification, and ownership-representation constraints stated in this document. A claim of full interoperability conformance SHALL identify the specific Representation, Serialization, and Encoding Profile versions used and is not possible until those Layer Profiles are released.
+A claim of full interoperability conformance is now possible and SHALL be made against this Profile Version together with the pinned Layer Profile versions. A dependency conflict anywhere in the Dependency Closure invalidates the affected conformance until resolved.
 
 Partial implementation SHALL NOT be described as full conformance.
 
@@ -156,7 +158,7 @@ Partial implementation SHALL NOT be described as full conformance.
 
 This Profile is versioned as an independent version domain under RFC-0015. Its Profile Identifier `urn:stas:profile:bdo` is stable across compatible revisions.
 
-This Profile is at version 0.1.0 and is **Draft**: it is expected to change as its Layer Profile dependencies are defined. A future 1.0.0 release will pin those Layer Profiles and constitute a complete, testable interoperability agreement.
+This Profile is at version 0.2.0 and is **Draft**. As of this version it composes and pins its three Layer Profiles (each at 0.1.0), forming a complete Representation → Serialization → Encoding pipeline. It remains Draft while that pipeline and its Layer Profiles stabilize; a future 1.0.0 release will constitute the settled, testable interoperability agreement. Because it now pins exact Layer Profile versions, adopting an incompatible revision of any composed Layer Profile is a breaking change and SHALL be expressed as a new incompatible Version of this Profile.
 
 A revision of this Profile SHALL classify its changes as compatible or breaking according to RFC-0015 and SHALL NOT weaken an Integrity, Identity, or security guarantee through a change declared compatible.
 
@@ -187,6 +189,9 @@ Representing ownership and provenance for independent verification may expose hi
 - RFC-0013 — Extension Model
 - RFC-0015 — Versioning and Compatibility
 - RFC-0016 — Conformance
+- `urn:stas:profile:bdo-representation` v0.1.0 — BDO Representation Layer Profile
+- `urn:stas:profile:bdo-serialization-cbor` v0.1.0 — BDO Serialization Layer Profile
+- `urn:stas:profile:bdo-encoding-cbor` v0.1.0 — BDO Encoding Layer Profile
 
 ## Informative
 
