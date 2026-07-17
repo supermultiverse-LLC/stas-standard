@@ -12,7 +12,8 @@ Only text incorporated into a released specification or a released Profile defin
 
 | Profile | Identifier | Version | Status | Purpose |
 |---|---|---|---|---|
-| [Bitcoin Digital Objects](stas-bdo-profile.md) | `urn:stas:profile:bdo` | 0.1.0 | Draft | Interoperable representation of Bitcoin Digital Objects |
+| [Bitcoin Digital Objects](stas-bdo-profile.md) | `urn:stas:profile:bdo` | 0.1.0 | Draft | Interoperable representation of Bitcoin Digital Objects (composite) |
+| [Bitcoin Digital Objects — Representation](stas-bdo-representation-profile.md) | `urn:stas:profile:bdo-representation` | 0.1.0 | Draft | Representation-layer structure for BDO Objects (Layer Profile, RFC-0008) |
 
 ## Naming
 
