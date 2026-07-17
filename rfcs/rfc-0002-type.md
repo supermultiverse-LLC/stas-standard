@@ -1,6 +1,6 @@
 # RFC-0002 — Type
 
-- Status: Draft
+- Status: Accepted
 - Author: STAS Contributors
 - Created: 2026-07-17
 

@@ -1,6 +1,6 @@
 # RFC-0011 — Transport
 
-- Status: Draft
+- Status: Accepted
 - Author: STAS Working Group
 - Created: 2026-07-17
 

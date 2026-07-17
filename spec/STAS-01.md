@@ -1,8 +1,8 @@
 # STAS-01 — Shared Taproot Assets Standard
 
-Status: Draft
+Status: Released
 Category: Standards Track
-Version: 1.0 (draft)
+Version: 1.0
 
 ## Abstract
 
