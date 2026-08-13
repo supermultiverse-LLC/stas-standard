@@ -164,6 +164,36 @@ Outside scope: storage systems, transport, attestation formats, platform APIs.
 
 ---
 
+# Taproot Assets Protocol Compatibility
+
+This Binding Profile consumes the Taproot Assets protocol **exactly as specified by its
+maintainers** and does not modify, extend, fork, or reinterpret it.
+
+- The Binding uses only protocol-defined primitives — the genesis identifier, the meta
+  payload and its commitment into the genesis identifier, proof material, and transfer
+  semantics — each with the meaning the protocol gives it.
+- The Binding occupies only the space the protocol leaves **application-defined**: the
+  octets placed in the meta payload and the object semantics layered above them. It
+  SHALL NOT require any deviation from, or extension of, protocol consensus or
+  validation rules, and conformance to this Binding SHALL NOT be claimed for an
+  implementation that modifies protocol behavior.
+- **Transfer-mechanism agnosticism.** The Binding binds Identity to the genesis
+  identifier — never to a transaction output, a holding mechanism, or a network path.
+  An asset moved by any protocol-supported mechanism, including on-chain transfers and
+  Lightning Network channels, retains its Identity and its committed bytes; this
+  Binding is unaffected by the transfer mechanism used.
+- **Protocol evolution.** A protocol release that preserves the genesis-identifier and
+  meta-commitment semantics requires no change to this Binding and is inherited
+  automatically. A protocol change to those primitives is a breaking change for this
+  Binding and SHALL be addressed as a new incompatible Version (RFC-0015) — never by
+  diverging from the protocol.
+- **Meta typing.** A Meta Commitment SHOULD be carried with the protocol's opaque meta
+  typing. Where a protocol feature requires a structured meta payload, a revision of
+  this Binding MAY define a structured carrier for the Meta Commitment; the commitment
+  semantics themselves are unchanged by the carrier.
+
+---
+
 # Objects Minted Before This Binding
 
 Taproot Assets carrying BDO-like objects exist whose meta payloads predate this Binding Profile (for example, platform-specific canonicalisations). For such assets:
