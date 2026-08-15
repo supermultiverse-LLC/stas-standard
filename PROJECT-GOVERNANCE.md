@@ -1,7 +1,7 @@
 # STAS-01 Project Governance
 
 Status: Active  
-Version: 1.0
+Version: 1.1
 
 ---
 
@@ -96,7 +96,7 @@ They do not define either the architecture or the specification.
 
 # Document Types
 
-The STAS project uses five document classes.
+The STAS project uses seven document classes.
 
 ## Architecture Decision Record (ADR)
 
@@ -155,7 +155,8 @@ Purpose:
 
 Define the normative behavior of STAS-01.
 
-Only documents inside spec/ define conformance.
+Documents inside spec/ define conformance, together with released Profiles
+and released Extensions within their declared scope (see below).
 
 Normative requirements use RFC 2119 terminology:
 
@@ -195,6 +196,64 @@ Provide implementation examples.
 
 Examples are informative unless explicitly referenced by the
 specification.
+
+---
+
+## Profiles
+
+Location:
+profiles/
+
+Purpose:
+
+Constrain permitted STAS behavior into a concrete, testable
+interoperability agreement, as defined by RFC-0012.
+
+A Profile has a stable Profile Identifier (`urn:stas:profile:<slug>`),
+an explicit Profile Version, and a lifecycle state:
+
+- Draft
+- In Review
+- Accepted
+- Deprecated
+- Superseded
+- Withdrawn
+
+A **released** Profile defines conformance within its declared scope.
+A Profile in Draft status is a proposal.
+
+A Profile may be a Layer Profile, a Composite Profile, or a **Binding**
+(RFC-0012 §Relationship to Bindings): a Binding maps STAS requirements to
+a specific protocol environment — for example, the Taproot Assets
+binding — and carries the same identification, versioning and conformance
+apparatus.
+
+The profiles/ index (README) is the authoritative list of Profiles, their
+versions and their states.
+
+---
+
+## Extensions
+
+Location:
+extensions/
+
+Purpose:
+
+Introduce optional semantics or technical behavior through a defined
+extension point, as defined by RFC-0013.
+
+An Extension has a stable Extension Identifier within the `urn:stas:ext`
+namespace (Namespace Authority: STAS Working Group), an explicit
+Extension Version, and a declared Processing Requirement
+(`MUST_UNDERSTAND` or `MAY_IGNORE`).
+
+A **released** Extension defines conformance for producers and verifiers
+of that Extension. An Extension in Draft status is a proposal. A consumer
+that does not process a `MAY_IGNORE` Extension preserves it byte-for-byte.
+
+The extensions/ index (README) is the authoritative list of Extensions,
+their versions and their states.
 
 ---
 
@@ -275,6 +334,10 @@ rfc/0001-short-title
 
 spec/feature-name
 
+profiles/short-title
+
+extensions/short-title
+
 docs/short-description
 
 Pull Requests are required before merging significant work.
@@ -300,7 +363,13 @@ Breaking changes require:
 
 ---
 
-# VersioningThe STAS specification follows semantic versioning.
+# Versioning
+
+The STAS specification follows semantic versioning.
+
+Profiles and Extensions are independent version domains (RFC-0015): each
+carries its own version, and a revision of one does not imply a revision
+of the specification or of any other Profile or Extension.
 
 Major versions introduce breaking changes.
 
