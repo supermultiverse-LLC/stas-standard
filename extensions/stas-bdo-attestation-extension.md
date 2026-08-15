@@ -67,7 +67,7 @@ Silence in this Extension SHALL NOT be interpreted as a requirement.
 
 - **STAS-01 v1.0** — RFC-0006 (Integrity), RFC-0013 (Extension Model), RFC-0015
   (Versioning), RFC-0016 (Conformance).
-- **`urn:stas:profile:bdo-taproot-binding` v0.1.0** — defines the Meta Commitment an
+- **`urn:stas:profile:bdo-taproot-binding` v0.2.0** — defines the Meta Commitment an
   Attestation targets and requires the Authenticity/Integrity separation this
   Extension realizes.
 - **External normative:** BIP-340 (Schnorr signatures), BIP-322 (generic signed
@@ -267,7 +267,7 @@ itself beyond the signing key and declared context fields.
 ## Normative
 
 - STAS-01 v1.0 — RFC-0006, RFC-0013, RFC-0015, RFC-0016
-- `urn:stas:profile:bdo-taproot-binding` v0.1.0
+- `urn:stas:profile:bdo-taproot-binding` v0.2.0
 - BIP-340 — Schnorr Signatures for secp256k1
 - BIP-322 — Generic Signed Message Format
 - NIP-01 — Nostr basic protocol (event model)

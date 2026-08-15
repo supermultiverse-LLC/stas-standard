@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Profile Identifier: `urn:stas:profile:bdo-taproot-binding`
-- Profile Version: 0.1.0
+- Profile Version: 0.2.0
 - Category: Binding (RFC-0012 §Relationship to Bindings), defined with the identification, versioning, and conformance apparatus of a Profile
 - Author: STAS Working Group
 - Created: 2026-07-25
@@ -85,21 +85,40 @@ The Identity of a BDO Object bound under this Profile **is the Taproot Asset gen
 
 The Taproot Asset's **meta payload** binds the asset to the object's canonical bytes.
 
-## Meta Commitment
+## Meta Binding Modes
 
-The **Meta Commitment** is the SHA-256 digest of the object's Encoded Form.
+The **Meta Commitment** is the SHA-256 digest of the object's Encoded Form. Every bound
+asset's meta payload MUST bind the object's canonical bytes in exactly one of two modes:
 
-- **Commitment Mode (mandatory).** A Binding Producer MUST place the Meta Commitment in the asset's meta payload at genesis. The full Encoded Form is preserved and retrieved through the Storage layer.
-- **Inline Mode (optional).** A Binding Producer MAY place the complete Encoded Form itself in the meta payload where protocol size limits permit. In Inline Mode the meta payload octets ARE the Encoded Form, and the Meta Commitment is derivable from them by any party.
+- **Inline Mode.** The meta payload octets ARE the Encoded Form; the Meta Commitment is
+  derivable from them by any party. Because the Taproot Assets protocol reveals the meta
+  payload together with the asset's genesis proof material, every party that holds or
+  receives the asset obtains the complete document **with the asset itself** — no Storage
+  layer and no third party are required to interpret the object.
+- **Commitment Mode.** The meta payload carries the Meta Commitment only. The full
+  Encoded Form is preserved and retrieved through the Storage layer (RFC-0014).
+
+### Mode selection
+
+- A Producer whose consumers cannot be assumed to reach a Storage layer — in particular
+  **sovereign issuance intended to remain fully interpretable from a node alone** —
+  SHOULD use Inline Mode, subject to protocol size limits.
+- A Producer using Commitment Mode SHALL ensure the Encoded Form is retrievable through
+  an identified Storage arrangement for its intended consumers, and SHOULD identify that
+  arrangement in its conformance documentation. Commitment Mode is appropriate for large
+  objects and for platform-mediated deployments.
+- The integrity semantics are equivalent in both modes: in Inline Mode the protocol's
+  genesis commitment covers the Encoded Form directly; in Commitment Mode it covers the
+  digest, and a consumer verifies a retrieved Form against that digest.
 
 A Binding Producer MUST fix the Encoded Form **before** genesis: the meta payload participates in the derivation of the genesis identifier, so the commitment — and therefore the object's canonical bytes — cannot be altered after mint without producing a different asset.
 
 > Informative — this is the property that makes the binding self-certifying: because the Taproot Assets protocol commits the meta payload into the genesis identifier, the object's **Identity transitively commits to the object's canonical bytes at genesis**. Content-derived identity is not needed; the protocol-derived Identity already fixes the content.
 
-## Retrieval
+## Retrieval (Commitment Mode)
 
 - A Binding Consumer that retrieves an Encoded Form from storage MUST recompute its SHA-256 digest and compare it to the Meta Commitment **before** interpreting the object, and MUST reject the retrieved bytes on mismatch (fail closed).
-- Failure to retrieve an Encoded Form does not invalidate the object or its Identity (Storage, RFC-0014); it only limits what a Consumer can currently evaluate.
+- Failure to retrieve an Encoded Form does not invalidate the object or its Identity (Storage, RFC-0014); it only limits what a Consumer can currently evaluate. A degraded presentation (identifier, type, amount) is a valid state — but a Producer that finds this state unacceptable for its consumers should have selected Inline Mode (see Mode selection).
 
 ---
 
@@ -216,7 +235,13 @@ A conformance claim SHALL identify this Profile Identifier and Version together 
 
 This Binding Profile is an independent version domain under RFC-0015. Its Profile Identifier `urn:stas:profile:bdo-taproot-binding` is stable across compatible revisions.
 
-This Profile is at version 0.1.0 and is **Draft**. Changing the digest algorithm, the commitment placement, or the Identity binding is a breaking change and SHALL be expressed as a new incompatible Version. Adding an optional mode is a compatible change.
+This Profile is at version 0.2.0 and is **Draft**. The 0.2.0 revision restructures the
+meta binding as two co-equal modes (Inline / Commitment) with explicit mode-selection
+guidance — Inline for sovereign, node-only interpretability; Commitment only with an
+identified Storage arrangement — replacing 0.1.0's commitment-first wording. Changing
+the digest algorithm, the mode semantics, or the Identity binding is a breaking change
+and SHALL be expressed as a new incompatible Version. Adding an optional mode is a
+compatible change.
 
 ---
 
