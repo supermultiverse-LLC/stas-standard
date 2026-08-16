@@ -1,6 +1,6 @@
 # STAS Extension — BDO Attestation
 
-- Status: Draft
+- Status: In Review
 - Extension Identifier: `urn:stas:ext:bdo-attestation`
 - Extension Namespace: `urn:stas:ext` (Namespace Authority: STAS Working Group)
 - Extension Version: 0.1.0

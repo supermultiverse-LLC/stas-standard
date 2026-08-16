@@ -1,6 +1,6 @@
 # STAS Profile — Bitcoin Digital Objects
 
-- Status: Draft
+- Status: In Review
 - Profile Identifier: `urn:stas:profile:bdo`
 - Profile Version: 0.3.0
 - Author: STAS Working Group
