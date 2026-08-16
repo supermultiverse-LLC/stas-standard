@@ -52,7 +52,7 @@ Silence in this Binding Profile SHALL NOT be interpreted as a requirement.
 This Binding Profile depends normatively on:
 
 - **STAS-01 v1.0** — in particular RFC-0003 (Identity), RFC-0006 (Integrity), RFC-0012 (Profiles), RFC-0013 (Extension Model), RFC-0015 (Versioning), RFC-0016 (Conformance).
-- **`urn:stas:profile:bdo` v0.2.0** — the composite BDO Profile, together with its pinned Layer Profiles (`bdo-representation` 0.1.0, `bdo-serialization-cbor` 0.1.0, `bdo-encoding-cbor` 0.1.0). The **Encoded Form** referenced throughout this document is the `application/cbor` Encoded Form those Layer Profiles produce.
+- **`urn:stas:profile:bdo` v0.3.0 (or a later compatible revision)** — the composite BDO Profile, together with its pinned Layer Profiles (`bdo-representation` 0.2.0, `bdo-serialization-cbor` 0.2.0, `bdo-encoding-cbor` 0.1.0). The **Encoded Form** referenced throughout this document is the `application/cbor` Encoded Form those Layer Profiles produce.
 - **The Taproot Assets protocol** — asset issuance, meta payloads, proofs, and transfers, as defined by its own specification. This is an external normative dependency; this Binding Profile uses its guarantees and does not restate them.
 - **Bitcoin** — as the anchoring substrate, via Taproot Assets.
 

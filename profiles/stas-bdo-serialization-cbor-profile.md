@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Profile Identifier: `urn:stas:profile:bdo-serialization-cbor`
-- Profile Version: 0.1.0
+- Profile Version: 0.2.0
 - Layer: Serialization (RFC-0009)
 - Format: Deterministically Encoded CBOR (RFC 8949 §4.2)
 - Author: STAS Working Group
@@ -94,6 +94,27 @@ Two conforming Serializers given the same conforming Representation MUST produce
 
 ---
 
+# Component Value Serialization
+
+Component slot content is defined by the BDO Representation Profile (0.2.0) in terms
+of abstract **value kinds**. This Profile fixes their CBOR forms:
+
+| Value kind | CBOR form |
+|---|---|
+| `text` | definite-length text string (major type 3), UTF-8, NFC-normalized at the Representation layer |
+| `octets` | definite-length byte string (major type 2) |
+| `uint` | unsigned integer (major type 0), shortest form |
+| `list` | definite-length array (major type 4), order as given by the Representation |
+| `map` | definite-length map (major type 5), keys as definite-length text strings, sorted per RFC 8949 §4.2.1 |
+
+The Deterministic Encoding Requirements of this Profile apply **recursively** to every
+nested item. Absent fields are omitted entirely — a conforming Serialized Form
+contains no nulls, no empty strings standing for absence, and no empty containers
+standing for absence. The fields defined by the Representation Profile use no
+floating-point values, and no CBOR tags are used for them.
+
+---
+
 # Extension Serialization
 
 Extensions in the `extensions` slot are serialized as a CBOR array of Extension items. Each Extension item is a CBOR map with the following keys, deterministically encoded:
@@ -150,7 +171,12 @@ Partial implementation SHALL NOT be described as full conformance.
 
 This Profile is an independent version domain under RFC-0015. Its Profile Identifier `urn:stas:profile:bdo-serialization-cbor` is stable across compatible revisions.
 
-This Profile is at version 0.1.0 and is **Draft**. Because determinism is a mandatory guarantee, any change that would alter the bytes produced for an existing conforming Representation is a breaking change and SHALL be expressed as a new incompatible Version.
+This Profile is at version 0.2.0 and is **Draft**. The 0.2.0 revision adds the
+Component Value Serialization section, fixing the CBOR form of each value kind
+defined by the Representation Profile 0.2.0 and making the deterministic rules
+explicitly recursive. Because determinism is a mandatory guarantee, any change that
+would alter the bytes produced for an existing conforming Representation is a
+breaking change and SHALL be expressed as a new incompatible Version.
 
 ---
 

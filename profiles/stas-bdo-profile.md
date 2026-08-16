@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Profile Identifier: `urn:stas:profile:bdo`
-- Profile Version: 0.2.0
+- Profile Version: 0.3.0
 - Author: STAS Working Group
 - Created: 2026-07-17
 
@@ -56,8 +56,8 @@ This Profile is a **Composite Profile** and composes the following **Layer Profi
 
 | Layer | Profile | Identifier | Version |
 |-------|---------|------------|---------|
-| Representation | BDO Representation | `urn:stas:profile:bdo-representation` | 0.1.0 |
-| Serialization | BDO Serialization (CBOR) | `urn:stas:profile:bdo-serialization-cbor` | 0.1.0 |
+| Representation | BDO Representation | `urn:stas:profile:bdo-representation` | 0.2.0 |
+| Serialization | BDO Serialization (CBOR) | `urn:stas:profile:bdo-serialization-cbor` | 0.2.0 |
 | Encoding | BDO Encoding (CBOR) | `urn:stas:profile:bdo-encoding-cbor` | 0.1.0 |
 
 Together these define the complete Representation → Serialization → Encoding pipeline for a Bitcoin Digital Object: the BDO Representation structure, a deterministic CBOR Serialized Form, and an `application/cbor` Encoded Form with byte-level equality. A conformance claim of full interoperability under this Profile SHALL identify these Layer Profile versions. The Transport and Storage of the resulting Encoded Form are outside this Profile and may be constrained by separate Layer Profiles.
@@ -158,7 +158,7 @@ Partial implementation SHALL NOT be described as full conformance.
 
 This Profile is versioned as an independent version domain under RFC-0015. Its Profile Identifier `urn:stas:profile:bdo` is stable across compatible revisions.
 
-This Profile is at version 0.2.0 and is **Draft**. As of this version it composes and pins its three Layer Profiles (each at 0.1.0), forming a complete Representation → Serialization → Encoding pipeline. It remains Draft while that pipeline and its Layer Profiles stabilize; a future 1.0.0 release will constitute the settled, testable interoperability agreement. Because it now pins exact Layer Profile versions, adopting an incompatible revision of any composed Layer Profile is a breaking change and SHALL be expressed as a new incompatible Version of this Profile.
+This Profile is at version 0.3.0 and is **Draft**. As of this version it pins Representation 0.2.0 and Serialization 0.2.0 (which add the component slot schemas and their CBOR value forms — the completeness pass that makes the pipeline implementable without guessing) together with Encoding 0.1.0, forming a complete Representation → Serialization → Encoding pipeline. It remains Draft while that pipeline and its Layer Profiles stabilize; a future 1.0.0 release will constitute the settled, testable interoperability agreement. Because it now pins exact Layer Profile versions, adopting an incompatible revision of any composed Layer Profile is a breaking change and SHALL be expressed as a new incompatible Version of this Profile.
 
 A revision of this Profile SHALL classify its changes as compatible or breaking according to RFC-0015 and SHALL NOT weaken an Integrity, Identity, or security guarantee through a change declared compatible.
 
@@ -189,8 +189,8 @@ Representing ownership and provenance for independent verification may expose hi
 - RFC-0013 — Extension Model
 - RFC-0015 — Versioning and Compatibility
 - RFC-0016 — Conformance
-- `urn:stas:profile:bdo-representation` v0.1.0 — BDO Representation Layer Profile
-- `urn:stas:profile:bdo-serialization-cbor` v0.1.0 — BDO Serialization Layer Profile
+- `urn:stas:profile:bdo-representation` v0.2.0 — BDO Representation Layer Profile
+- `urn:stas:profile:bdo-serialization-cbor` v0.2.0 — BDO Serialization Layer Profile
 - `urn:stas:profile:bdo-encoding-cbor` v0.1.0 — BDO Encoding Layer Profile
 
 ## Informative
