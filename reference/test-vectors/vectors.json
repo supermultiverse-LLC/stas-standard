@@ -1,0 +1,169 @@
+[
+  {
+    "name": "collectible-minimal",
+    "description": "Smallest conforming collectible: required slots only; content is the media (A5).",
+    "representation": {
+      "type": "collectible",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment"
+      },
+      "content": {
+        "media": [
+          {
+            "uri": "https://example.com/art.png"
+          }
+        ]
+      }
+    },
+    "cbor_hex": "a464747970656b636f6c6c65637469626c6567636f6e74656e74a1656d6564696181a163757269781b68747470733a2f2f6578616d706c652e636f6d2f6172742e706e67686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e6573697369696e74656772697479a166736368656d6572636172726965722d636f6d6d69746d656e74",
+    "cbor_length": 145,
+    "meta_commitment_sha256": "555ad6be45c0c129ee2fbd571007c1206343539db7ca7d5a4b75cf0390262898"
+  },
+  {
+    "name": "ticket-full",
+    "description": "Ticket with metadata, validity window, uses, an attribute, and an integrity ref binding the image bytes. The metadata.name is written in the source with a DECOMPOSED accent (Cafe\\u0301) and must serialize NFC-composed.",
+    "representation": {
+      "type": "ticket",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment",
+        "refs": [
+          {
+            "subject": "metadata.image",
+            "alg": "sha-256",
+            "digest": "00fc2e83cef378960e1c228055845c2825ba9148337bb9c0adf9710a288e7dc1"
+          }
+        ]
+      },
+      "content": {
+        "event": "Satoshi Stadium Final",
+        "ticket_type": "General",
+        "valid_from": 1767225600,
+        "valid_until": 1767312000,
+        "uses": 1
+      },
+      "metadata": {
+        "name": "Entrada Café Final",
+        "issuer": "Vector Issuer",
+        "image": "https://example.com/ticket.png",
+        "attributes": [
+          {
+            "trait": "row",
+            "value": "10"
+          }
+        ]
+      }
+    },
+    "cbor_hex": "a56474797065667469636b657467636f6e74656e74a5647573657301656576656e74755361746f736869205374616469756d2046696e616c6a76616c69645f66726f6d1a6955b9006b7469636b65745f747970656747656e6572616c6b76616c69645f756e74696c1a69570a80686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e65736973686d65746164617461a4646e616d6573456e747261646120436166c3a92046696e616c65696d616765781e68747470733a2f2f6578616d706c652e636f6d2f7469636b65742e706e67666973737565726d566563746f72204973737565726a6174747269627574657381a265747261697463726f776576616c756562313069696e74656772697479a2647265667381a363616c67677368612d32353666646967657374582000fc2e83cef378960e1c228055845c2825ba9148337bb9c0adf9710a288e7dc1677375626a6563746e6d657461646174612e696d61676566736368656d6572636172726965722d636f6d6d69746d656e74",
+    "cbor_length": 395,
+    "meta_commitment_sha256": "630ac51263a367dc6edfab5f2410109a3efeb4e1af844056fd7fcc1b776ca15b"
+  },
+  {
+    "name": "membership",
+    "description": "Membership: the grant is the content.",
+    "representation": {
+      "type": "membership",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment"
+      },
+      "content": {
+        "grant": "clubhouse-access",
+        "valid_until": 1798761600
+      },
+      "metadata": {
+        "name": "Vector Membership"
+      }
+    },
+    "cbor_hex": "a564747970656a6d656d6265727368697067636f6e74656e74a2656772616e7470636c7562686f7573652d6163636573736b76616c69645f756e74696c1a6b36ec80686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e65736973686d65746164617461a1646e616d6571566563746f72204d656d6265727368697069696e74656772697479a166736368656d6572636172726965722d636f6d6d69746d656e74",
+    "cbor_length": 176,
+    "meta_commitment_sha256": "473000c55c5fc2dcafe35f74d827eaba9149960f7b6875a3b7e7ac85ac0a2b26"
+  },
+  {
+    "name": "redeemable",
+    "description": "Redeemable: the promise and its redemption count are the content.",
+    "representation": {
+      "type": "redeemable",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment"
+      },
+      "content": {
+        "promise": "one-coffee",
+        "redemptions": 3
+      },
+      "metadata": {
+        "name": "Coffee Card"
+      }
+    },
+    "cbor_hex": "a564747970656a72656465656d61626c6567636f6e74656e74a26770726f6d6973656a6f6e652d636f666665656b726564656d7074696f6e7303686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e65736973686d65746164617461a1646e616d656b436f66666565204361726469696e74656772697479a166736368656d6572636172726965722d636f6d6d69746d656e74",
+    "cbor_length": 162,
+    "meta_commitment_sha256": "c77a5d5691b34ad8c799be18a09b0e281661f055812adfc73061275e4b2df48e"
+  },
+  {
+    "name": "certificate",
+    "description": "Certificate (RFC-0017): the certification statement is the content; inert.",
+    "representation": {
+      "type": "certificate",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment"
+      },
+      "content": {
+        "subject": "Guitar SN-0042",
+        "declaration": "Authentic instrument, workshop of Vector Luthiers",
+        "reference": "SN-0042"
+      },
+      "metadata": {
+        "name": "Certificate of Authenticity",
+        "issuer": "Vector Luthiers"
+      }
+    },
+    "cbor_hex": "a564747970656b636572746966696361746567636f6e74656e74a3677375626a6563746e47756974617220534e2d30303432697265666572656e636567534e2d303034326b6465636c61726174696f6e783141757468656e74696320696e737472756d656e742c20776f726b73686f70206f6620566563746f72204c75746869657273686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e65736973686d65746164617461a2646e616d65781b4365727469666963617465206f662041757468656e746963697479666973737565726f566563746f72204c7574686965727369696e74656772697479a166736368656d6572636172726965722d636f6d6d69746d656e74",
+    "cbor_length": 275,
+    "meta_commitment_sha256": "47e4f67d771e8d7b9982eed5bf9514d3faa86e179d6b6ad8d3ff060d11a7d047"
+  },
+  {
+    "name": "collectible-with-extension",
+    "description": "Collectible carrying one Extension item (urn:stas:ext:bdo-attestation). The payload here is EXEMPLARY opaque bytes — the attestation payload serialization is defined by the Extension and is byte-preserved by this layer regardless of its content.",
+    "representation": {
+      "type": "collectible",
+      "identity": {
+        "scheme": "taproot-assets-genesis"
+      },
+      "integrity": {
+        "scheme": "carrier-commitment"
+      },
+      "content": {
+        "media": [
+          {
+            "uri": "https://example.com/art.png"
+          }
+        ]
+      },
+      "extensions": [
+        {
+          "id": "bdo-attestation",
+          "ns": "urn:stas:ext",
+          "ver": "0.1.0",
+          "req": "MAY_IGNORE",
+          "payload": "7b226578616d706c65223a226f7061717565206174746573746174696f6e207061796c6f6164227d"
+        }
+      ]
+    },
+    "cbor_hex": "a564747970656b636f6c6c65637469626c6567636f6e74656e74a1656d6564696181a163757269781b68747470733a2f2f6578616d706c652e636f6d2f6172742e706e67686964656e74697479a166736368656d6576746170726f6f742d6173736574732d67656e6573697369696e74656772697479a166736368656d6572636172726965722d636f6d6d69746d656e746a657874656e73696f6e7381a56269646f62646f2d6174746573746174696f6e626e736c75726e3a737461733a657874637265716a4d41595f49474e4f52456376657265302e312e30677061796c6f616458287b226578616d706c65223a226f7061717565206174746573746174696f6e207061796c6f6164227d",
+    "cbor_length": 268,
+    "meta_commitment_sha256": "9e162a8f7ca007b3955c756e6e213f4a9637171513a50cb3c045f0895dc0915f"
+  }
+]
