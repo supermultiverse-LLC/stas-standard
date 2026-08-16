@@ -12,11 +12,11 @@ Only text incorporated into a released specification or a released Profile defin
 
 | Profile | Identifier | Version | Status | Purpose |
 |---|---|---|---|---|
-| [Bitcoin Digital Objects](stas-bdo-profile.md) | `urn:stas:profile:bdo` | 0.3.0 | Draft | Interoperable representation of Bitcoin Digital Objects (composite; pins the 3 Layer Profiles) |
-| [Bitcoin Digital Objects — Representation](stas-bdo-representation-profile.md) | `urn:stas:profile:bdo-representation` | 0.2.0 | Draft | Representation-layer structure for BDO Objects (Layer Profile, RFC-0008) |
-| [Bitcoin Digital Objects — Serialization (CBOR)](stas-bdo-serialization-cbor-profile.md) | `urn:stas:profile:bdo-serialization-cbor` | 0.2.0 | Draft | Deterministic CBOR serialization for BDO Objects (Layer Profile, RFC-0009) |
-| [Bitcoin Digital Objects — Encoding (CBOR)](stas-bdo-encoding-cbor-profile.md) | `urn:stas:profile:bdo-encoding-cbor` | 0.1.0 | Draft | Identity CBOR encoding + `application/cbor` for BDO Objects (Layer Profile, RFC-0010) |
-| [Bitcoin Digital Objects — Taproot Binding](stas-bdo-taproot-binding-profile.md) | `urn:stas:profile:bdo-taproot-binding` | 0.2.0 | Draft | Binds a BDO Object to a Taproot Asset: Identity = genesis id, meta commitment to the Encoded Form, two-scope Integrity, ownership via the protocol (Binding, RFC-0012) |
+| [Bitcoin Digital Objects](stas-bdo-profile.md) | `urn:stas:profile:bdo` | 0.3.0 | In Review | Interoperable representation of Bitcoin Digital Objects (composite; pins the 3 Layer Profiles) |
+| [Bitcoin Digital Objects — Representation](stas-bdo-representation-profile.md) | `urn:stas:profile:bdo-representation` | 0.2.0 | In Review | Representation-layer structure for BDO Objects (Layer Profile, RFC-0008) |
+| [Bitcoin Digital Objects — Serialization (CBOR)](stas-bdo-serialization-cbor-profile.md) | `urn:stas:profile:bdo-serialization-cbor` | 0.2.0 | In Review | Deterministic CBOR serialization for BDO Objects (Layer Profile, RFC-0009) |
+| [Bitcoin Digital Objects — Encoding (CBOR)](stas-bdo-encoding-cbor-profile.md) | `urn:stas:profile:bdo-encoding-cbor` | 0.1.0 | In Review | Identity CBOR encoding + `application/cbor` for BDO Objects (Layer Profile, RFC-0010) |
+| [Bitcoin Digital Objects — Taproot Binding](stas-bdo-taproot-binding-profile.md) | `urn:stas:profile:bdo-taproot-binding` | 0.2.0 | In Review | Binds a BDO Object to a Taproot Asset: Identity = genesis id, meta commitment to the Encoded Form, two-scope Integrity, ownership via the protocol (Binding, RFC-0012) |
 
 ## Naming
 

@@ -1,6 +1,6 @@
 # STAS Binding Profile — Bitcoin Digital Objects on Taproot Assets
 
-- Status: Draft
+- Status: In Review
 - Profile Identifier: `urn:stas:profile:bdo-taproot-binding`
 - Profile Version: 0.2.0
 - Category: Binding (RFC-0012 §Relationship to Bindings), defined with the identification, versioning, and conformance apparatus of a Profile

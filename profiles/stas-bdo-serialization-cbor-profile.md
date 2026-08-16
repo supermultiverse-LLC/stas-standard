@@ -1,6 +1,6 @@
 # STAS Layer Profile — Bitcoin Digital Objects Serialization (Deterministic CBOR)
 
-- Status: Draft
+- Status: In Review
 - Profile Identifier: `urn:stas:profile:bdo-serialization-cbor`
 - Profile Version: 0.2.0
 - Layer: Serialization (RFC-0009)
