@@ -171,6 +171,37 @@ const vectors = [
       ],
     },
   },
+  {
+    name: 'certificate-with-embedded-attestation',
+    description:
+      'Certificate embedding one bdo-attestation item (Extension 0.2.0). Exercises the Attestation Target ' +
+      'computation: remove every bdo-attestation item (matched by ns+id, irrespective of ver), omit the ' +
+      'extensions slot if it becomes empty, re-encode canonically; the SHA-256 of that form is the ' +
+      'Attestation Target Digest. The representation is the certificate vector plus the attestation item, so ' +
+      'the Attestation Target Digest MUST equal the certificate vector’s Meta Commitment — a built-in ' +
+      'cross-check. The Meta Commitment of THIS vector covers the full form, attestation included.',
+    emitAttestationTarget: true,
+    representation: {
+      type: 'certificate',
+      identity: IDENTITY,
+      integrity: INTEGRITY,
+      content: {
+        subject: 'Guitar SN-0042',
+        declaration: 'Authentic instrument, workshop of Vector Luthiers',
+        reference: 'SN-0042',
+      },
+      metadata: { name: 'Certificate of Authenticity', issuer: 'Vector Luthiers' },
+      extensions: [
+        {
+          id: 'bdo-attestation',
+          ns: 'urn:stas:ext',
+          ver: '0.2.0',
+          req: 'MAY_IGNORE',
+          payload: Buffer.from('{"example":"opaque creator attestation (0.2.0)"}', 'utf8'),
+        },
+      ],
+    },
+  },
 ];
 
 // ── generation ────────────────────────────────────────────────────────────────
@@ -184,9 +215,23 @@ function reprForDisplay(v) {
   );
 }
 
+// Attestation Target Form (bdo-attestation Extension 0.2.0): remove every
+// bdo-attestation item (matched by ns+id, irrespective of ver); omit the
+// extensions slot if it becomes empty (absent, not empty).
+function stripAttestations(repr) {
+  if (!repr.extensions) return repr;
+  const kept = repr.extensions.filter(
+    (it) => !(it.ns === 'urn:stas:ext' && it.id === 'bdo-attestation'),
+  );
+  const out = { ...repr };
+  if (kept.length) out.extensions = kept;
+  else delete out.extensions;
+  return out;
+}
+
 const out = vectors.map((v) => {
   const bytes = encode(v.representation);
-  return {
+  const entry = {
     name: v.name,
     description: v.description,
     representation: reprForDisplay(v.representation),
@@ -194,6 +239,13 @@ const out = vectors.map((v) => {
     cbor_length: bytes.length,
     meta_commitment_sha256: sha256(bytes).toString('hex'),
   };
+  if (v.emitAttestationTarget) {
+    const target = encode(stripAttestations(v.representation));
+    entry.attestation_target_form_hex = target.toString('hex');
+    entry.attestation_target_form_length = target.length;
+    entry.attestation_target_digest_sha256 = sha256(target).toString('hex');
+  }
+  return entry;
 });
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -227,6 +279,22 @@ const md = [
     v.meta_commitment_sha256,
     '```',
     '',
+    ...(v.attestation_target_digest_sha256
+      ? [
+          `Attestation Target Form (${v.attestation_target_form_length} bytes — bdo-attestation items stripped, slot omitted if empty):`,
+          '',
+          '```',
+          v.attestation_target_form_hex,
+          '```',
+          '',
+          `Attestation Target Digest (SHA-256 of the form above):`,
+          '',
+          '```',
+          v.attestation_target_digest_sha256,
+          '```',
+          '',
+        ]
+      : []),
   ]),
 ].join('\n');
 

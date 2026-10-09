@@ -8,6 +8,7 @@ representation pipeline:
 | `urn:stas:profile:bdo-representation` | 0.2.0 |
 | `urn:stas:profile:bdo-serialization-cbor` | 0.2.0 |
 | `urn:stas:profile:bdo-encoding-cbor` | 0.1.0 |
+| `urn:stas:ext:bdo-attestation` (Attestation Target computation only) | 0.2.0 |
 
 ## What a vector is
 
@@ -16,6 +17,14 @@ CBOR bytes** (hex), and the **Meta Commitment** — the SHA-256 of those bytes,
 as placed in the Taproot Asset meta payload under
 `urn:stas:profile:bdo-taproot-binding` (Commitment Mode), or derivable from the
 payload (Inline Mode).
+
+A vector that embeds `bdo-attestation` items additionally gives the
+**Attestation Target Form** (the Encoded Form recomputed with every
+`bdo-attestation` item stripped — matched by `ns`+`id`, irrespective of
+`ver` — and the `extensions` slot omitted if it becomes empty) and its
+SHA-256, the **Attestation Target Digest**, per `urn:stas:ext:bdo-attestation`
+0.2.0. Where the stripped form coincides with another vector's
+Representation, the digests MUST coincide too — a built-in cross-check.
 
 Two independent Serializers conforming to the profiles MUST reproduce these
 bytes exactly. An implementation that produces different bytes for a vector's
