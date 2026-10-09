@@ -1,6 +1,6 @@
-# STAS — Shared Taproot Assets Standard
+# STAS
 
-STAS is an open, vendor-neutral standard for the interoperable representation of Bitcoin Digital Objects (BDOs) using the Taproot Assets protocol.
+STAS is an open, vendor-neutral standard for the interoperable representation of Bitcoin Digital Objects (BDOs).
 
 Its purpose is to enable Bitcoin Digital Objects to be created, exchanged, verified, and understood across independent wallets, platforms, and applications without dependence on a specific vendor or implementation.
 
@@ -9,6 +9,14 @@ STAS-01 is the first technical specification developed under the STAS standard.
 STAS-01 defines how Bitcoin Digital Objects are represented.
 
 It does not define what a Bitcoin Digital Object is. The conceptual model of Bitcoin Digital Objects is maintained independently by the [Bitcoin Digital Objects project](https://github.com/supermultiverse-LLC/bitcoin-digital-objects).
+
+---
+
+## Name and Numbering
+
+STAS is used as a proper noun. The name originated as an acronym of "Shared Taproot Assets Standard"; the expansion is retained here for historical traceability only. The specification core is protocol-independent: bindings to a concrete platform or protocol — such as the Taproot Assets protocol — are out of scope of the core specification and are defined separately through Profiles.
+
+STAS-XX numbering indicates specification sequence. Binding to a concrete protocol does not produce a new specification; it is defined through a Profile of an existing one.
 
 ---
 
@@ -31,7 +39,7 @@ These principles take precedence over the requirements or convenience of any ind
 
 ## Scope
 
-STAS-01 specifies the technical representation of Bitcoin Digital Objects using Taproot Assets.
+STAS-01 specifies the technical representation of Bitcoin Digital Objects. Bindings to a specific platform or protocol are defined separately through Profiles.
 
 The specification may define:
 
@@ -71,11 +79,20 @@ The projects are maintained separately so that the conceptual model can remain i
 ---
 
 ## Repository Structure
+archive/
+    Superseded material retained for traceability
+
 decisions/
     Architecture Decision Records (ADRs)
 
 docs/
     Informative architecture and supporting documentation
+
+extensions/
+    Namespaced, versioned extensions attached at defined extension points
+
+profiles/
+    Profiles that select, constrain, or combine STAS behavior for concrete interoperability purposes, including protocol bindings
 
 reference/
     Informative reference material for implementers
