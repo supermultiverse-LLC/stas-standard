@@ -1,8 +1,10 @@
-# STAS-01 — Shared Taproot Assets Standard
+# STAS-01
 
 Status: Released
 Category: Standards Track
-Version: 1.0
+Version: 1.0.1
+
+This version is an editorial revision of v1.0. It introduces no normative changes.
 
 ## Abstract
 
@@ -35,7 +37,7 @@ Bitcoin Digital Objects   (open ownership category — the conceptual model)
       ▲
 STAS-01                   (open interoperability specification — this document)
       ▲
-Taproot Assets
+Protocol binding          (defined by a Profile — for example, the Taproot Assets protocol)
       ▲
 Bitcoin
 ```
