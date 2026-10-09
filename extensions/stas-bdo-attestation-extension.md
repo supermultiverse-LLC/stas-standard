@@ -3,7 +3,7 @@
 - Status: In Review
 - Extension Identifier: `urn:stas:ext:bdo-attestation`
 - Extension Namespace: `urn:stas:ext` (Namespace Authority: STAS Working Group)
-- Extension Version: 0.1.0
+- Extension Version: 0.2.0
 - Processing Requirement: `MAY_IGNORE`
 - Author: STAS Working Group
 - Created: 2026-08-13
@@ -18,13 +18,15 @@ about a BDO Object, referencing the object's Integrity evidence.
 An Attestation is how **Authenticity** travels with a BDO Object — who authored it, who
 vouches for it — while remaining strictly separate from Integrity, as required by
 RFC-0006 and by the *Authenticity Separation* section of the Taproot Binding Profile
-(`urn:stas:profile:bdo-taproot-binding`). An Attestation references the Integrity
-digest; it is never the Integrity mechanism.
+(`urn:stas:profile:bdo-taproot-binding`). An Attestation references a digest derived
+from the object's canonical bytes (see The Attestation Target); it is never the
+Integrity mechanism.
 
-This is the first concrete Extension defined under the Extension Model (RFC-0013). It
-is carried in the `extensions` slot of the BDO Representation
-(`urn:stas:profile:bdo-representation`) and is byte-preserved by consumers that do not
-process it.
+This is the first concrete Extension defined under the Extension Model (RFC-0013). An
+Attestation MAY be embedded as an item in the `extensions` slot of the BDO
+Representation (`urn:stas:profile:bdo-representation`) or conveyed detached alongside
+the object (see Placement); embedded Attestations are byte-preserved by consumers
+that do not process them.
 
 ---
 
@@ -67,9 +69,9 @@ Silence in this Extension SHALL NOT be interpreted as a requirement.
 
 - **STAS-01 v1.0** — RFC-0006 (Integrity), RFC-0013 (Extension Model), RFC-0015
   (Versioning), RFC-0016 (Conformance).
-- **`urn:stas:profile:bdo-taproot-binding` v0.2.0** — defines the Meta Commitment an
-  Attestation targets and requires the Authenticity/Integrity separation this
-  Extension realizes.
+- **`urn:stas:profile:bdo-taproot-binding` v0.2.0** — defines the Encoded Form and
+  the Meta Commitment from which the Attestation Target is derived, and requires the
+  Authenticity/Integrity separation this Extension realizes.
 - **External normative:** BIP-340 (Schnorr signatures), BIP-322 (generic signed
   messages), the Nostr event model (NIP-01) for the `nostr-event` scheme, FIPS 180-4
   (SHA-256).
@@ -101,20 +103,73 @@ Every Attestation MUST carry:
 | `role` | the capacity in which the signer attests (see Roles) |
 | `scheme` | the signature scheme (see Schemes) |
 | `signer` | the signer's public key, in the scheme's canonical form |
-| `target` | the referenced digest: the Meta Commitment of the object (lowercase 64-hex) |
+| `target` | the referenced digest: the Attestation Target Digest of the object (lowercase 64-hex; see The Attestation Target) |
 | `signature` | the signature material, per the scheme |
 | scheme evidence | any additional material the scheme requires for independent validation, byte-preserved |
 
 Requirements:
 
-- The `target` MUST equal the object's Meta Commitment. An Attestation whose target
-  does not match the accompanying object MUST be treated as not valid for that object.
+- The `target` MUST equal the object's Attestation Target Digest. An Attestation
+  whose target does not match the accompanying object MUST be treated as not valid
+  for that object.
 - An object MAY carry multiple Attestations (multiple roles, multiple signers). An
   Attestation Producer SHOULD NOT attach more than one Attestation per (role, signer,
   scheme) triple.
 - An Attestation MUST be independently delimitable and byte-preserved (RFC-0013); a
   Verifier MUST validate the signature over the exact preserved bytes, never over a
   re-serialization.
+
+---
+
+# The Attestation Target
+
+An Attestation cannot sign bytes that contain itself: an embedded Attestation is part
+of the Encoded Form, and the Form is fixed before genesis. The Attestation therefore
+signs the object **as it stands without attestations**.
+
+The **Attestation Target Form** of an object is computed from its Encoded Form as
+follows:
+
+1. Decode the Encoded Form to its Representation under the pinned Layer Profiles.
+2. Remove from the `extensions` slot every extension item that identifies this
+   Extension (`ns` `urn:stas:ext`, `id` `bdo-attestation`), irrespective of `ver`.
+3. If the `extensions` slot becomes empty, omit the slot entirely (absent, not
+   empty — per `urn:stas:profile:bdo-representation`).
+4. Re-serialize and re-encode the result under the same pinned Layer Profile
+   versions.
+
+The **Attestation Target Digest** is the SHA-256 of the Attestation Target Form,
+lowercase 64-hex.
+
+Properties and requirements:
+
+- For an object that embeds no Attestation items, the Attestation Target Digest
+  equals the Meta Commitment.
+- The **Meta Commitment is unchanged**: Integrity (the Taproot Binding Profile)
+  commits to the full Encoded Form, embedded Attestations included. Integrity and
+  Authenticity remain separate: embedded Attestations are covered by the object's
+  Integrity evidence while being excluded from their own signing scope.
+- A Verifier MUST recompute the Attestation Target Digest from the object it holds
+  (decode, strip, re-encode, hash) and MUST NOT accept a declared digest in its
+  place. The recomputation is well-defined because the Serialization and Encoding
+  Layer Profiles are deterministic; it is not a re-serialization of the Attestation
+  itself (see Security Considerations).
+
+---
+
+# Placement
+
+- **Embedded** — the Attestation is an item in the `extensions` slot. Only
+  Attestations produced before the Encoded Form is fixed can be embedded (typically
+  `creator` at issuance). Under the Taproot Binding Profile's Inline Mode, embedded
+  Attestations travel in the genesis meta reveal: every holder of the asset receives
+  the creator's signature with the object itself.
+- **Detached** — the Attestation is conveyed outside the object (platform records,
+  indexes, verification responses). Attestations produced after issuance (for
+  example `platform` endorsements) are necessarily detached.
+
+Embedded and detached Attestations carry the same `target` (the Attestation Target
+Digest) and validate identically.
 
 ---
 
@@ -146,7 +201,8 @@ The Attestation is a complete signed Nostr event (NIP-01), preserved verbatim.
 - The event `tags` MUST include, each exactly once:
   - `["purpose", <purpose literal>]` (see Domain Separation);
   - `["domain", <domain identifier>]`;
-  - `["metadata_hash", <target>]` — the tag value MUST equal the Attestation `target`.
+  - `["metadata_hash", <target>]` — the tag value MUST equal the Attestation `target`
+    (the Attestation Target Digest; the tag name `metadata_hash` is historical).
 - The event `pubkey` (x-only, lowercase hex) is the `signer` and MUST equal the
   Attestation's signer field.
 - Validation: recompute the event id over the preserved event fields per NIP-01;
@@ -159,7 +215,7 @@ The Attestation signs the **canonical commitment payload**: a JSON object with k
 ascending lexicographic order, UTF-8 encoded, no insignificant whitespace, containing:
 
 - `domain` — the domain identifier;
-- `metadata_hash` — the target;
+- `metadata_hash` — the target (the Attestation Target Digest; the key name is historical);
 - `purpose` — the purpose literal;
 - `schema_version` — the string `"1"`;
 - optionally `asset_id`, `collection_id`, `issuer_user_id` — included only when
@@ -230,9 +286,12 @@ Conformance Class. Partial implementation SHALL NOT be described as full conform
 This Extension is an independent version domain under RFC-0015. Its Extension
 Identifier `urn:stas:ext:bdo-attestation` is stable across compatible revisions.
 
-This Extension is at version 0.1.0 and is **Draft**. Adding a scheme or a role is a
-compatible change; changing the validation rules of an existing scheme, the standard
-purpose literal, or the Processing Requirement is a breaking change and SHALL be
+This Extension is at version 0.2.0 and is **In Review**. Version 0.2.0 redefines the
+`target` as the Attestation Target Digest (previously the Meta Commitment), resolving
+the self-reference of embedded Attestations; per RFC-0015 this is an incompatible
+change from 0.1.0. Adding a scheme or a role is a compatible change; changing the
+validation rules of an existing scheme, the standard purpose literal, the Attestation
+Target computation, or the Processing Requirement is a breaking change and SHALL be
 expressed as a new incompatible Version. The Processing Requirement MAY be
 strengthened by a Profile, instance, or emitter and SHALL NOT be weakened (RFC-0013).
 
@@ -250,6 +309,10 @@ strengthened by a Profile, instance, or emitter and SHALL NOT be weakened (RFC-0
   MUST layer them explicitly; a Verifier MUST NOT infer revocation from absence.
 - Signature validation MUST use the preserved bytes. Re-serializing before validation
   reintroduces exactly the canonicalisation ambiguity this ecosystem exists to remove.
+  The Attestation Target recomputation (decode, strip, re-encode) is not an exception
+  to this rule: the signature itself is still validated over the preserved Attestation
+  bytes; the deterministic recomputation only reproduces the digest those bytes
+  reference.
 
 ---
 

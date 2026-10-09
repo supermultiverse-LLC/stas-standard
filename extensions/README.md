@@ -18,7 +18,7 @@ Only text incorporated into a released Extension defines conformance. An Extensi
 
 | Extension | Identifier | Version | Processing | Status | Purpose |
 |---|---|---|---|---|---|
-| [BDO Attestation](stas-bdo-attestation-extension.md) | `urn:stas:ext:bdo-attestation` | 0.1.0 | `MAY_IGNORE` | In Review | Signed authorship/endorsement statements (creator, platform) referencing the object's Meta Commitment — Authenticity, kept separate from Integrity |
+| [BDO Attestation](stas-bdo-attestation-extension.md) | `urn:stas:ext:bdo-attestation` | 0.2.0 | `MAY_IGNORE` | In Review | Signed authorship/endorsement statements (creator, platform) referencing the object's Attestation Target Digest (the Encoded Form with attestation items stripped) — Authenticity, kept separate from Integrity; embedded or detached |
 
 ## Naming
 
