@@ -1,6 +1,6 @@
 # STAS Layer Profile — Bitcoin Digital Objects Representation
 
-- Status: In Review
+- Status: Accepted
 - Profile Identifier: `urn:stas:profile:bdo-representation`
 - Profile Version: 0.2.0
 - Layer: Representation (RFC-0008)
