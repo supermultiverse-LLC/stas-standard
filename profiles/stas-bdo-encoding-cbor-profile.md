@@ -1,6 +1,6 @@
 # STAS Layer Profile — Bitcoin Digital Objects Encoding (CBOR)
 
-- Status: In Review
+- Status: Accepted
 - Profile Identifier: `urn:stas:profile:bdo-encoding-cbor`
 - Profile Version: 0.1.0
 - Layer: Encoding (RFC-0010)
@@ -123,7 +123,7 @@ Partial implementation SHALL NOT be described as full conformance.
 
 This Profile is an independent version domain under RFC-0015. Its Profile Identifier `urn:stas:profile:bdo-encoding-cbor` is stable across compatible revisions.
 
-This Profile is at version 0.1.0 and is **Draft**. Any change that would alter the octets of the Encoded Form for an existing conforming Serialized Form — including introducing a non-identity transformation — is a breaking change and SHALL be expressed as a new incompatible Version.
+This Profile is at version 0.1.0 and is **Accepted**. Any change that would alter the octets of the Encoded Form for an existing conforming Serialized Form — including introducing a non-identity transformation — is a breaking change and SHALL be expressed as a new incompatible Version.
 
 ---
 

@@ -1,6 +1,6 @@
 # RFC-0017 — BDO Type Vocabulary
 
-- Status: In Review
+- Status: Accepted
 - Author: STAS Working Group
 - Created: 2026-08-16
 
