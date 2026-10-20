@@ -3,6 +3,8 @@
 All notable changes to the STAS specifications will be documented in this file.
 
 ## [Unreleased]
+### Added
+- RFC-0018 (Draft): Generation Provenance Attribute — reserves the Metadata trait `art_generated` (`ai` / `ai_assisted` / `human` / `algorithmic`) as an issuer declaration about the presented media, with an optional `digital_source_type` companion mapped to the IPTC Digital Source Type vocabulary used by C2PA; consumer rules: declaration not verdict, absence means undeclared, unrecognized values never rejected, no trust effect.
 ### Changed
 - `bdo-attestation` Extension revised to **0.2.0** (In Review): the `target` is now the **Attestation Target Digest** — SHA-256 of the Encoded Form recomputed with every `bdo-attestation` extension item stripped (slot omitted if empty) — instead of the Meta Commitment. This resolves the self-reference of embedded Attestations (a signature cannot be inside the bytes it signs). New Placement section: embedded (pre-genesis, travels in the Inline Mode meta reveal) vs detached (post-issuance), same target for both. For an object with no embedded attestation items the Attestation Target Digest equals the Meta Commitment; the Meta Commitment itself is unchanged. Incompatible change from 0.1.0 per RFC-0015.
 - Promoted to **Accepted**: the three Layer Profiles — `bdo-representation` 0.2.0, `bdo-serialization-cbor` 0.2.0, `bdo-encoding-cbor` 0.1.0 — and RFC-0017 (BDO Type Vocabulary). Evidence: the six frozen test vectors (`reference/test-vectors/`) are reproduced byte-exactly by two independent implementations (TypeScript and C#).
